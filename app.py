@@ -2,7 +2,9 @@ from flask import Flask, render_template,request,redirect,url_for # For flask im
 from pymongo import MongoClient # Database connector
 from bson.objectid import ObjectId # For ObjectId to work
 from bson.errors import InvalidId # For catching InvalidId exception for ObjectId
+from prometheus_flask_exporter import PrometheusMetrics
 import os
+import json
 
 mongodb_host = os.environ.get('MONGO_HOST', 'localhost')
 mongodb_port = int(os.environ.get('MONGO_PORT', '27017'))
@@ -11,6 +13,7 @@ db = client.camp2016    #Select the database
 todos = db.todo #Select the collection
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 title = "TODO with Flask"
 heading = "ToDo Reminder"
 #modify=ObjectId()
@@ -29,8 +32,7 @@ def lists ():
 
 @app.route("/")
 def hello():
-    return 'Hello, World!'
-
+	pass
 @app.route("/uncompleted")
 def tasks ():
 	#Display the Uncompleted Tasks
@@ -121,6 +123,10 @@ def search():
 @app.route("/about")
 def about():
 	return render_template('credits.html',t=title,h=heading)
+
+@app.route("/metrics")
+def metrics():
+    pass
 
 if __name__ == "__main__":
 	env = os.environ.get('FLASK_ENV', 'development')
